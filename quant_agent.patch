@@ -1,0 +1,221 @@
+From 5363fd2732a992ce2d63fec5fbf9a3ddc417e97c Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 2 Jul 2026 19:39:37 +0000
+Subject: [PATCH] Reorganize quant_agent into proper repo layout
+
+Move the multi-agent paper trading system (ResearchAgent, QAAgent,
+HedgeFundAnalystAgent, RiskManager, PaperBroker, engine, CLI, tests)
+out of the ad-hoc upload folder into a standard package layout at the
+repo root, and add a .gitignore for pycache/db artifacts.
+---
+ .gitignore                                                  | 6 ++++++
+ quant_agentsource (2) 2/README.md => QUANT_AGENT.md         | 0
+ .../quant-agent.service => quant-agent.service              | 0
+ .../quant_agent => quant_agent}/__init__.py                 | 0
+ .../quant_agent => quant_agent}/agents/__init__.py          | 0
+ .../quant_agent => quant_agent}/agents/hedge_fund.py        | 0
+ .../quant_agent => quant_agent}/agents/qa.py                | 0
+ .../quant_agent => quant_agent}/agents/research.py          | 0
+ .../quant_agent => quant_agent}/broker/__init__.py          | 0
+ .../quant_agent => quant_agent}/broker/base.py              | 0
+ .../quant_agent => quant_agent}/broker/paper.py             | 0
+ .../quant_agent => quant_agent}/broker/webull.py            | 0
+ {quant_agentsource (2) 2/quant_agent => quant_agent}/cli.py | 0
+ .../quant_agent => quant_agent}/config.py                   | 0
+ .../quant_agent => quant_agent}/data/__init__.py            | 0
+ .../quant_agent => quant_agent}/data/base.py                | 0
+ .../quant_agent => quant_agent}/data/sample.py              | 0
+ .../quant_agent => quant_agent}/data/yfinance_provider.py   | 0
+ .../quant_agent => quant_agent}/disclaimer.py               | 0
+ .../quant_agent => quant_agent}/engine.py                   | 0
+ .../quant_agent => quant_agent}/factories.py                | 0
+ .../quant_agent => quant_agent}/portfolio.py                | 0
+ .../quant_agent => quant_agent}/reasoning/__init__.py       | 0
+ .../reasoning/anthropic_reasoner.py                         | 0
+ .../quant_agent => quant_agent}/reasoning/base.py           | 0
+ .../quant_agent => quant_agent}/reasoning/heuristic.py      | 0
+ .../quant_agent => quant_agent}/risk.py                     | 0
+ .../quant_agent => quant_agent}/runner.py                   | 0
+ .../quant_agent => quant_agent}/store.py                    | 0
+ .../requirements.txt => requirements.txt                    | 0
+ {quant_agentsource (2) 2/tests => tests}/__init__.py        | 0
+ .../tests => tests}/test_paper_broker.py                    | 0
+ {quant_agentsource (2) 2/tests => tests}/test_risk.py       | 0
+ 33 files changed, 6 insertions(+)
+ create mode 100644 .gitignore
+ rename quant_agentsource (2) 2/README.md => QUANT_AGENT.md (100%)
+ rename quant_agentsource (2) 2/quant-agent.service => quant-agent.service (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/__init__.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/agents/__init__.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/agents/hedge_fund.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/agents/qa.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/agents/research.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/broker/__init__.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/broker/base.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/broker/paper.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/broker/webull.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/cli.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/config.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/data/__init__.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/data/base.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/data/sample.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/data/yfinance_provider.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/disclaimer.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/engine.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/factories.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/portfolio.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/reasoning/__init__.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/reasoning/anthropic_reasoner.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/reasoning/base.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/reasoning/heuristic.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/risk.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/runner.py (100%)
+ rename {quant_agentsource (2) 2/quant_agent => quant_agent}/store.py (100%)
+ rename quant_agentsource (2) 2/requirements.txt => requirements.txt (100%)
+ rename {quant_agentsource (2) 2/tests => tests}/__init__.py (100%)
+ rename {quant_agentsource (2) 2/tests => tests}/test_paper_broker.py (100%)
+ rename {quant_agentsource (2) 2/tests => tests}/test_risk.py (100%)
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..c58e861
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,6 @@
++__pycache__/
++*.pyc
++*.db
++.venv/
++venv/
++*.egg-info/
+diff --git a/quant_agentsource (2) 2/README.md b/QUANT_AGENT.md
+similarity index 100%
+rename from quant_agentsource (2) 2/README.md
+rename to QUANT_AGENT.md
+diff --git a/quant_agentsource (2) 2/quant-agent.service b/quant-agent.service
+similarity index 100%
+rename from quant_agentsource (2) 2/quant-agent.service
+rename to quant-agent.service
+diff --git a/quant_agentsource (2) 2/quant_agent/__init__.py b/quant_agent/__init__.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/__init__.py
+rename to quant_agent/__init__.py
+diff --git a/quant_agentsource (2) 2/quant_agent/agents/__init__.py b/quant_agent/agents/__init__.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/agents/__init__.py
+rename to quant_agent/agents/__init__.py
+diff --git a/quant_agentsource (2) 2/quant_agent/agents/hedge_fund.py b/quant_agent/agents/hedge_fund.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/agents/hedge_fund.py
+rename to quant_agent/agents/hedge_fund.py
+diff --git a/quant_agentsource (2) 2/quant_agent/agents/qa.py b/quant_agent/agents/qa.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/agents/qa.py
+rename to quant_agent/agents/qa.py
+diff --git a/quant_agentsource (2) 2/quant_agent/agents/research.py b/quant_agent/agents/research.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/agents/research.py
+rename to quant_agent/agents/research.py
+diff --git a/quant_agentsource (2) 2/quant_agent/broker/__init__.py b/quant_agent/broker/__init__.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/broker/__init__.py
+rename to quant_agent/broker/__init__.py
+diff --git a/quant_agentsource (2) 2/quant_agent/broker/base.py b/quant_agent/broker/base.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/broker/base.py
+rename to quant_agent/broker/base.py
+diff --git a/quant_agentsource (2) 2/quant_agent/broker/paper.py b/quant_agent/broker/paper.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/broker/paper.py
+rename to quant_agent/broker/paper.py
+diff --git a/quant_agentsource (2) 2/quant_agent/broker/webull.py b/quant_agent/broker/webull.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/broker/webull.py
+rename to quant_agent/broker/webull.py
+diff --git a/quant_agentsource (2) 2/quant_agent/cli.py b/quant_agent/cli.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/cli.py
+rename to quant_agent/cli.py
+diff --git a/quant_agentsource (2) 2/quant_agent/config.py b/quant_agent/config.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/config.py
+rename to quant_agent/config.py
+diff --git a/quant_agentsource (2) 2/quant_agent/data/__init__.py b/quant_agent/data/__init__.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/data/__init__.py
+rename to quant_agent/data/__init__.py
+diff --git a/quant_agentsource (2) 2/quant_agent/data/base.py b/quant_agent/data/base.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/data/base.py
+rename to quant_agent/data/base.py
+diff --git a/quant_agentsource (2) 2/quant_agent/data/sample.py b/quant_agent/data/sample.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/data/sample.py
+rename to quant_agent/data/sample.py
+diff --git a/quant_agentsource (2) 2/quant_agent/data/yfinance_provider.py b/quant_agent/data/yfinance_provider.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/data/yfinance_provider.py
+rename to quant_agent/data/yfinance_provider.py
+diff --git a/quant_agentsource (2) 2/quant_agent/disclaimer.py b/quant_agent/disclaimer.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/disclaimer.py
+rename to quant_agent/disclaimer.py
+diff --git a/quant_agentsource (2) 2/quant_agent/engine.py b/quant_agent/engine.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/engine.py
+rename to quant_agent/engine.py
+diff --git a/quant_agentsource (2) 2/quant_agent/factories.py b/quant_agent/factories.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/factories.py
+rename to quant_agent/factories.py
+diff --git a/quant_agentsource (2) 2/quant_agent/portfolio.py b/quant_agent/portfolio.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/portfolio.py
+rename to quant_agent/portfolio.py
+diff --git a/quant_agentsource (2) 2/quant_agent/reasoning/__init__.py b/quant_agent/reasoning/__init__.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/reasoning/__init__.py
+rename to quant_agent/reasoning/__init__.py
+diff --git a/quant_agentsource (2) 2/quant_agent/reasoning/anthropic_reasoner.py b/quant_agent/reasoning/anthropic_reasoner.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/reasoning/anthropic_reasoner.py
+rename to quant_agent/reasoning/anthropic_reasoner.py
+diff --git a/quant_agentsource (2) 2/quant_agent/reasoning/base.py b/quant_agent/reasoning/base.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/reasoning/base.py
+rename to quant_agent/reasoning/base.py
+diff --git a/quant_agentsource (2) 2/quant_agent/reasoning/heuristic.py b/quant_agent/reasoning/heuristic.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/reasoning/heuristic.py
+rename to quant_agent/reasoning/heuristic.py
+diff --git a/quant_agentsource (2) 2/quant_agent/risk.py b/quant_agent/risk.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/risk.py
+rename to quant_agent/risk.py
+diff --git a/quant_agentsource (2) 2/quant_agent/runner.py b/quant_agent/runner.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/runner.py
+rename to quant_agent/runner.py
+diff --git a/quant_agentsource (2) 2/quant_agent/store.py b/quant_agent/store.py
+similarity index 100%
+rename from quant_agentsource (2) 2/quant_agent/store.py
+rename to quant_agent/store.py
+diff --git a/quant_agentsource (2) 2/requirements.txt b/requirements.txt
+similarity index 100%
+rename from quant_agentsource (2) 2/requirements.txt
+rename to requirements.txt
+diff --git a/quant_agentsource (2) 2/tests/__init__.py b/tests/__init__.py
+similarity index 100%
+rename from quant_agentsource (2) 2/tests/__init__.py
+rename to tests/__init__.py
+diff --git a/quant_agentsource (2) 2/tests/test_paper_broker.py b/tests/test_paper_broker.py
+similarity index 100%
+rename from quant_agentsource (2) 2/tests/test_paper_broker.py
+rename to tests/test_paper_broker.py
+diff --git a/quant_agentsource (2) 2/tests/test_risk.py b/tests/test_risk.py
+similarity index 100%
+rename from quant_agentsource (2) 2/tests/test_risk.py
+rename to tests/test_risk.py
+-- 
+2.43.0
+
