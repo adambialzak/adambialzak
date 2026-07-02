@@ -1,0 +1,12 @@
+# quant_agent optional dependencies
+# The core system runs on Python stdlib only.
+# Install these only when you need the corresponding backend.
+
+# Real market data (replaces the synthetic sample provider)
+# yfinance>=0.2.0
+
+# LLM reasoning (replaces the transparent heuristic reasoner)
+# anthropic>=0.25.0
+
+# Live / UAT trading via Webull's official OpenAPI
+# webull-openapi-python-sdk>=1.0.0

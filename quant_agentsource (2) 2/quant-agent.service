@@ -1,0 +1,20 @@
+[Unit]
+Description=quant_agent autonomous paper trading daemon
+After=network.target
+
+[Service]
+Type=simple
+User=quant
+WorkingDirectory=/opt/quant_agent
+ExecStart=/opt/quant_agent/venv/bin/python -m quant_agent.cli run --interval 60 --report-every 20
+Restart=unless-stopped
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+# Optional: set environment variables here
+# Environment=QA_DATA_PROVIDER=yfinance
+# Environment=QA_REASONER=heuristic
+# Environment=ANTHROPIC_API_KEY=sk-...
+
+[Install]
+WantedBy=multi-user.target
